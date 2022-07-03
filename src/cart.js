@@ -11,25 +11,26 @@ function calculQuantityCart(panierElements) {
     return sumWithInitial
 }
 
-class Cart {
+function nbItemsCart(lastQtyProduct, newQtyProduct, numberItems) {
+    numberItems = numberItems + (newQtyProduct - lastQtyProduct)
+    return numberItems
+}
 
-    nbItemsCart(lastQtyProduct, newQtyProduct, numberItems) {
-        numberItems = numberItems + (newQtyProduct - lastQtyProduct)
-    }
-
-    totalAmountCart(lastQtyProduct, newQtyProduct, priceProduct, totalAmount) {
-        if (newQtyProduct > lastQtyProduct) {
-            totalAmount = totalAmount + priceProduct * (newQtyProduct - lastQtyProduct)
-        } else {
-            if (newQtyProduct < lastQtyProduct)
-                totalAmount = totalAmount - priceProduct * (lastQtyProduct - newQtyProduct)
+function totalAmountCart(lastQtyProduct, newQtyProduct, priceProduct, totalAmount) {
+    if (newQtyProduct > lastQtyProduct) {
+        totalAmount = totalAmount + priceProduct * (newQtyProduct - lastQtyProduct)
+    } else {
+        if (newQtyProduct < lastQtyProduct) {
+            totalAmount = totalAmount - priceProduct * (lastQtyProduct - newQtyProduct)
         }
     }
+    return totalAmount.toFixed(2)
+}
+
+class Cart {  
 
 
-
-
-    static add(idP, quantityP, priceP, cart, callback) {
+    static add(idP, quantityP, priceP, cart) {
 
         let product = { id: idP, qty: quantityP }
 
@@ -46,26 +47,28 @@ class Cart {
             cart.total.nb = cart.total.nb + parseInt(product.qty)
             cart.total.totalamount = cart.total.totalamount + priceP * product.qty
             console.log("addToCart request.session.panier.total", cart.total)
-            callback()
         }
+        return cart
     }
 
-    static getCartItem(idP, product, cart, callback) {
+    static getCartItem(idP, product, cart) {
         let indexOfFoundProductItem = cart.products.findIndex(p => p.id == idP)
         product['amount'] = product.price * cart.products[indexOfFoundProductItem].qty
-        callback()
+        return product
     }
 
-    static delCartItem(idP, product, cart, callback) {
+    static delCartItem(idP, product, cart) {
         let indexOfFoundProductItem = cart.products.findIndex(p => p.id == idP)
+        console.log("**** indexOfFoundProductItem", indexOfFoundProductItem)
         cart.total.totalamount =
             cart.total.totalamount - product.price * cart.products[indexOfFoundProductItem].qty
         cart.products.splice(indexOfFoundProductItem, 1)
+        console.log("**** cart.products", cart.products)
         cart.total.nb = calculQuantityCart(cart.products)
-        callback()
+        return cart
     }
 
-    static updateCartItem(idP, qtyP, product, cart, cartItem, callback) {
+    static updateCartItem(idP, qtyP, product, cart, cartItem) {
         let indexOfFoundProductItem = cart.products.findIndex(p => p.id == idP)
         let foundProductItem = cart.products[indexOfFoundProductItem]
         if (foundProductItem) {
@@ -77,40 +80,10 @@ class Cart {
                 + product.price * (cart.products[indexOfFoundProductItem].qty - lastQty)
             cartItem['item'] = product
             cartItem['cart'] = cart
-            callback()
         }
+        return cartItem
     }
 
-
-
-
-
-
-    /* let foundProductItem = request.session.panier.products.find(p => p.id == cartItemId)
-     db.dbGetCartItem(cartItemId,
-       function (error, results, fields) {
-         console.log(results[0])
-         if (request.body['qty'] <= results[0].quantity) {
-           request.session.panier.products[indexOfFoundProductItem].qty = request.body['qty']
-           console.log("request.session.panier après", request.session.panier)
-           results[0]['amount'] = results[0].price * foundProductItem.qty
-           console.log("1.results[0]", results[0])
-           request.session.panier.total.nb = calculQuantityPanier(request.session.panier.products)
-           request.session.panier.total.totalamount = request.session.panier.total.totalamount
-             + calculMontantItem(results[0].price, (foundProductItem.qty - last_qty))
-           console.log("request.session.panier.total", request.session.panier.total)
-           console.log("request.session.panier.products", request.session.panier.products)
-           response.json({ item: results[0], cart: request.session.panier })
-         } else {
-           results[0]['amount'] = results[0].price * foundProductItem.qty
-           console.log("1.results[0]", results[0])
-           request.session.panier.total.nb = calculQuantityPanier(request.session.panier.products)
-           request.session.panier.total.totalamount = request.session.panier.total.totalamount
-             + calculMontantItem(results[0].price, (foundProductItem.qty - last_qty))
-           console.log("request.session.panier.total", request.session.panier.total)
-           console.log("request.session.panier.products", request.session.panier.products)
-           response.json({ item: results[0], cart: request.session.panier })
-         }*/
 }
 
 

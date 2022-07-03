@@ -3,15 +3,15 @@ const db = require('./db_utils');
 class Product {
     constructor(nameP, descriptionP, pictureP, priceP, longdescriptionP, origineP, quantityP, idP) {
         this.name = nameP,
-            this.description = descriptionP,
-            this.picture = pictureP,
-            this.price = priceP,
-            this.longdescription = longdescriptionP,
-            this.origine = origineP,
-            this.quantity = quantityP,
-            this.id = idP
+        this.description = descriptionP,
+        this.picture = pictureP,
+        this.price = priceP,
+        this.longdescription = longdescriptionP,
+        this.origine = origineP,
+        this.quantity = quantityP,
+        this.id = idP
     }
- 
+
     getId() {
         return this.id
     }
@@ -44,21 +44,18 @@ class Product {
         return this.quantity
     }
 
-    static add(formData, callback) {
+    static add(formData) {
         db.dbAddProduct(formData, function (results) {
-            callback()
         })
     }
 
-    static del(formData, callback) {
-        db.dbDelProduct(formData, function () {
-            callback()
+    static del(formData) {
+        db.dbDelProduct(formData, () => {
         })
     }
 
-    static update(formData, callback) {
-        db.dbUpdateProduct(formData, function (results) {
-            callback()
+    static update(formData) {
+        db.dbUpdateProduct(formData, () => {
         })
     }
 
@@ -85,7 +82,7 @@ class Product {
             },
         )
     }
-    
+
 }
 
 module.exports = Product
