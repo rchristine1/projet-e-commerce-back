@@ -44,19 +44,16 @@ class Product {
         return this.quantity
     }
 
-    static add(formData) {
-        db.dbAddProduct(formData, function (results) {
-        })
+    static add(formData,callback) {
+        db.dbAddProduct(formData, callback)
     }
 
-    static del(formData) {
-        db.dbDelProduct(formData, () => {
-        })
+    static del(formData,callback) {
+        db.dbDelProduct(formData, callback)
     }
 
-    static update(formData) {
-        db.dbUpdateProduct(formData, () => {
-        })
+    static update(formData,callback) {
+        db.dbUpdateProduct(formData, callback )
     }
 
     static findAll(callback) {

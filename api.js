@@ -42,6 +42,7 @@ app.post('/register', (request, response) => {
 })
 
 app.post('/login', (request, response) => {
+  console.log("LoGIN")
   let isEmailFounded = users.find(p => p.email == request.body.email)
   if (typeof isEmailFounded !== "undefined") {
     let indexOfIsEmailFounded = users.indexOf(isEmailFounded)
@@ -66,8 +67,9 @@ app.post('/login', (request, response) => {
 })
 
 app.get('/logout', (request, response) => {
+  console.log("LOGOUT")
   request.session.destroy();
-  response.redirect('/welcome-page');
+  response.json({'islogged':false,'isadmin':false});
 });
 
 
@@ -80,7 +82,7 @@ app.get('/get-products', (request, response) => {
 app.get('/get-product/:id', (request, response) => {
   let productId = [request.params['id']]
   Product.findbyId(productId, product => {
-    console.log("**** get-product",product)
+    console.log("**** get-product", product)
     response.json(product)
   })
 })
@@ -97,21 +99,23 @@ app.post('/new-product', (request, response) => {
     parseInt(request.body['quantity']),
   )
 
-  Product.add(Object.values(productToUpdate))
+  Product.add(Object.values(productToUpdate), function () { response.redirect('/get-products') })
   console.log("Product added")
-  response.redirect("/get-products")
+
 })
 
 app.post('/del-product', (request, response) => {
+  //app.delete('/del-product', (request, response) => {
   let formData = [
     request.body['id']
   ]
-  Product.del(formData)
+  Product.del(formData, function () { response.redirect("/get-products") })
   console.log("Product deleted")
-  response.redirect("/get-products")
+
 })
 
 app.post('/update-product', (request, response) => {
+  //app.put('/update-product', (request, response) => {
   productToUpdate = new Product(
     request.body['name'],
     request.body['description'],
@@ -123,9 +127,12 @@ app.post('/update-product', (request, response) => {
     request.body['id']
   )
   console.log("Product p", productToUpdate)
-  Product.update(Object.values(productToUpdate))
+  Product.update(Object.values(productToUpdate), function () {
+    Product.findbyId(productToUpdate.id, product => { response.json(product) })
+  }
+  )
   console.log("Product updated")
-  response.redirect("/get-products")
+  //Product.findbyId(productToUpdate.id, product => { response.json(product) })
 })
 
 app.get('/addToCart/:productId/:productQty', (request, response) => {
@@ -169,6 +176,7 @@ app.get('/get-cartItem/:cartItemId', (request, response) => {
 })
 
 app.post('/del-cartItem', (request, response) => {
+  //app.delete('/del-cartItem', (request, response) => {
   let cartItemId = [request.body['id']]
   console.log("**** Id a supprimer cartItemId", cartItemId)
   console.log("**** Avant Suppression ", request.session.panier)
@@ -187,6 +195,7 @@ app.post('/del-cartItem', (request, response) => {
 )
 
 app.post('/get-cartItem-amount', (request, response) => {
+  //app.put('/get-cartItem-amount', (request, response) => {
   if (typeof request.session.panier === "undefined") {
     response.redirect('/welcome-page')
   } else {
